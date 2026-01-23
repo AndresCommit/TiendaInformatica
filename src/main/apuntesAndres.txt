@@ -1,0 +1,12 @@
+Primero vamos a desarrollar el menú
+
+    Tenemos la estructura del proyecto creado
+
+    Clases FabricanteDAO y ProductoDAO
+        Añadir los métodos necesarios para las consultas
+        crearFabricante()
+        buscarFabricantePorId()
+        listarFabricantes()
+        modificarFabricante()
+        eliminarFabricante()
+

@@ -1,0 +1,42 @@
+
+Realizar una consulta
+    - Configurar SessionFactory (Hibernate) - EntityManagerFactory (JPA)
+        - Gestionar/carga el archivo de configuracion de la base de datos
+        - SE CREA SOLO UNA VEZ
+    - Crear una instancia de Session(Hibernate) - EntityManager (JPA)
+     -  Es una interfaz que nos permite realizar consultas a la base de datos
+        consultas CRUD
+    - Para hacer las consultas vamos a utilizar JPQL (Java Persistence Query Language)
+    para hacer consultas a la base de datos
+    JPQL es un lenguaje de consulta potente que te permite definir consultas de base de datos basadas en tu modelo de entidad. Su estructura y sintaxis son muy similares a SQL. Pero hay una diferencia importante que quiero señalar antes de explicarte las diferentes partes de una consulta JPQL.
+    JPQL utiliza el modelo de objeto entidad en lugar de tablas de base de datos para definir una consulta. Eso hace que sea muy cómodo para nosotros, los desarrolladores de Java, pero hay que tener en cuenta que la base de datos sigue usando SQL. Hibernate, o cualquier otra implementación de JPA, tiene que transformar la consulta JPQL a SQL.
+        la sintaxis es similar a SQL
+        Utiliza el modelo objeto entidad en lugar de las tablas de la base de datos
+        para definir consultas.
+            - select p from Producto p
+                Selección – La cláusula FROM
+                La cláusula FROM define de qué entidades se seleccionan los datos. Hibernate, o cualquier otra implementación de JPA, mapea las entidades a las tablas correspondientes de la base de datos.
+                La sintaxis de una cláusula JPQL FROM es similar a SQL pero utiliza el modelo de entidad en lugar de nombres de tabla o columna.
+                    muestra una consulta JPQL sencilla en la que selecciono todas las entidades Producto.
+                f (El segundo f, después de Fabricante):
+                    Es el Alias (apodo).A partir de ahora, en esta consulta, cada fila de fabricante que encuentres la vamos a llamar f
+                SELECT f:
+                    Aquí es donde dices qué quieres devolver.
+                    Al decir SELECT f, Devuélveme el Objeto Completo al que hemos apodado f"
+
+          //COnsultas que se han realizado en clase;
+            sacar todos los fabricantes
+               List<Fabricante> fabricantes = session.createQuery("select f from Fabricante f", Fabricante.class).getResultList();
+            Contar el número de productos que hay en la base de datos
+               int cantidadProductos = session.createQuery("select count(p) from Producto p", Integer.class).getSingleResult();
+            Contar el número de productos que tiene el fabricante cuyo codigo es 1
+               Long cantidadProductosFabricante1 = session.createQuery("select count(p) from Producto p where p.fabricante.codigo=1", Long.class).getSingleResult();
+
+           Como se puede ver en todas las consultas, se utiliza la palabra reservada select seguido de la lista de atributos que se van a devolver.
+
+            la gran ventaja es que no necesitas escribir la condición de unión (WHERE f.codigo = p.codigo_fabricante) explícitamente, porque Hibernate ya sabe cómo se unen gracias a tu anotación @ManyToOne.
+            En lugar de pensar en "tablas cruzadas", piensa en navegación: "Seleccióname la cuenta de productos donde el código de SU fabricante sea 1".
+            JPQL: WHERE p.fabricante.codigo = 1 (Solo le dices el camino, Hibernate se encarga de hacer los INNER JOIN necesarios por debajo).
+            SQL Antiguo: FROM producto p, fabricante f WHERE f.codigo = p.codigo_fabricante AND f.codigo = 1 (Tienes que explicarle tú cómo unir las tablas).
+
+
