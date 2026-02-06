@@ -3,8 +3,9 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
+
     <session-factory>
-        <property name="connection.url">jdbc:mysql://10.203.28.199:3306/TiendaInformatica</property>
+        <property name="connection.url">jdbc:mysql://10.203.28.66:3306/TiendaInformatica</property>
         <!--<property name="connection.url">jdbc:mysql://192.168.1.40:3306/tiendaInformatica</property> -->
 
         <property name="connection.username">usuario_tiendaInformatica</property>
@@ -22,4 +23,5 @@
         <mapping class="es.alber.entity.Fabricante"/>
         <mapping class="es.alber.entity.Producto"/>
     </session-factory>
+
 </hibernate-configuration>

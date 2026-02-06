@@ -1,6 +1,7 @@
 package es.alber;
 
 import es.alber.dao.FabricanteDAO;
+import es.alber.dao.ProductoDAO;
 import es.alber.entity.Fabricante;
 import es.alber.entity.Producto;
 
@@ -31,7 +32,7 @@ public class Main {
                     break;
 
                 case 2:
-                    System.out.println("\n=== Menú Productos ===");
+                    menuProductos(entrada);
                     break;
 
                 case 0:
@@ -44,6 +45,52 @@ public class Main {
         } while (opcion != 0);
 
         entrada.close();
+    }
+
+    private static void menuProductos(Scanner entrada) {
+        int opcionProd;
+        ProductoDAO productoDAO = new ProductoDAO();
+        do {
+            System.out.println("\n   === Menú Gestión Productos ===");
+            System.out.println("   1. Crear Producto");
+            System.out.println("   2. Listar Productos");
+            System.out.println("   9. Volver atrás");
+            System.out.print("   Elige una opción: ");
+            opcionProd = entrada.nextInt();
+
+            switch (opcionProd) {
+                case 1:
+                    crearProducto(entrada, productoDAO);
+                    break;
+                case 2:
+                    for (Producto p : productoDAO.listarTodos()) {
+                        System.out.println(p);
+                    }
+                    break;
+            }
+        } while (opcionProd != 9);
+    }
+
+    private static void crearProducto(Scanner entrada, ProductoDAO dao) {
+        entrada.nextLine();
+        System.out.print("Nombre del producto: ");
+        String nombre = entrada.nextLine();
+        System.out.print("Precio: ");
+        double precio = entrada.nextDouble();
+        System.out.println("Lista de Fabricantes Existentes:");
+        listarFabricantes();
+        entrada.nextLine();
+        System.out.print("Introduce el ID del Fabricante: ");
+        int idFab = entrada.nextInt();
+
+        Fabricante fab = fabricanteDAO.buscarPorId(idFab);
+        if (fab != null) {
+            Producto p = new Producto(nombre, precio);
+            p.setFabricante(fab);
+            dao.guardar(p);
+        } else {
+            System.out.println("Error: El fabricante no existe.");
+        }
     }
 
     private static void crearFabricante() {
@@ -80,7 +127,7 @@ public class Main {
     }
     private static void listarFabricantes() {
         Fabricante fabricante = new Fabricante();
-        fabricanteDAO.listar(fabricante, new Producto());
+        fabricanteDAO.listar();
     }
     private static void buscarFabricanteDeUnProducto() {
         Scanner entrada = new Scanner(System.in);

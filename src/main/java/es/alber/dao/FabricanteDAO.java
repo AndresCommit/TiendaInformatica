@@ -28,23 +28,10 @@ public class FabricanteDAO {
         }
     }
 
-    public void listar(Fabricante fabricante1, Producto producto) {
-        Transaction tx = null;
+    public List<Fabricante> listar() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            /*Comenzar la transacción*/
-            tx = session.beginTransaction();
-            /*Guardar el objeto en la BBDD*/
-            List<Fabricante> fabricantes =
-                    session.createQuery("SELECT f FROM Fabricante f ORDER BY codigo asc ", Fabricante.class)
-                            .getResultList();
-            for (Fabricante fabricante : fabricantes) {
-                System.out.println("--------------");
-                System.out.println("ID: "+fabricante.getCodigo()+"\tNombre:" + fabricante.getNombre());
-            }
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
+            return session.createQuery("SELECT f FROM Fabricante f ORDER BY f.codigo ASC", Fabricante.class)
+                    .getResultList();
         }
     }
 
@@ -84,21 +71,10 @@ public class FabricanteDAO {
         }
     }
 
-    public static Fabricante buscar(Fabricante fabricante) {
-        Transaction tx = null;
+    public Fabricante buscarPorId(int id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            /*Comenzar la transacción*/
-            tx = session.beginTransaction();
-            session.createQuery("SELECT f FROM Fabricante f WHERE f.nombre = :nombre").setParameter("nombre", fabricante.getNombre()).getResultList();
-            System.out.println("ID del fabricante con nombre: "+fabricante.getNombre()+", "+fabricante.getCodigo());
-            tx.commit();
-
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
+            return session.get(Fabricante.class, id);
         }
-        return fabricante;
     }
     public static Fabricante buscarPorNombre(String nombreBusqueda) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -110,6 +86,7 @@ public class FabricanteDAO {
             return null;
         }
     }
+
     public Fabricante buscarFabricantePorNombreProducto(String nombreProducto) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx;
