@@ -35,11 +35,11 @@ public class FabricanteDAO {
             tx = session.beginTransaction();
             /*Guardar el objeto en la BBDD*/
             List<Fabricante> fabricantes =
-                    session.createQuery("SELECT f FROM Fabricante f", Fabricante.class)
+                    session.createQuery("SELECT f FROM Fabricante f ORDER BY codigo asc ", Fabricante.class)
                             .getResultList();
             for (Fabricante fabricante : fabricantes) {
-                System.out.println("----------------------------");
-                System.out.println("ID Del Fabricante: "+fabricante.getCodigo()+"\nFabricante:" + fabricante.getNombre());
+                System.out.println("--------------");
+                System.out.println("ID: "+fabricante.getCodigo()+"\tNombre:" + fabricante.getNombre());
             }
         } catch (Exception e) {
             if (tx != null) {
@@ -89,7 +89,6 @@ public class FabricanteDAO {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             /*Comenzar la transacción*/
             tx = session.beginTransaction();
-            /*Guardar el objeto en la BBDD*/
             session.createQuery("SELECT f FROM Fabricante f WHERE f.nombre = :nombre").setParameter("nombre", fabricante.getNombre()).getResultList();
             System.out.println("ID del fabricante con nombre: "+fabricante.getNombre()+", "+fabricante.getCodigo());
             tx.commit();
@@ -113,11 +112,13 @@ public class FabricanteDAO {
     }
     public Fabricante buscarFabricantePorNombreProducto(String nombreProducto) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx;
             String query = "SELECT f FROM Fabricante f JOIN f.listaProductos p WHERE LOWER(p.nombre) = LOWER(:nombreProd)";
-            session.createQuery(query, Fabricante.class)
+            tx=session.beginTransaction();
+            return session.createQuery(query, Fabricante.class)
                     .setParameter("nombreProd", nombreProducto)
                     .uniqueResult();
-            return null;
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;

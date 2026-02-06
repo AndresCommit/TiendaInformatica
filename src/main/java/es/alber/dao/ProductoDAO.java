@@ -29,7 +29,11 @@ public class ProductoDAO {
             }
         }
     }
+    public void actualizarPrecio(Producto producto) {
+        Producto producto1 = new Producto();
 
+
+    }
     public void guardarProductoJuntoFabricante(Producto producto, String nombreFabricante) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();

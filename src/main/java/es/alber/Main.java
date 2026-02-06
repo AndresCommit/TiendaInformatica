@@ -86,6 +86,7 @@ public class Main {
         Scanner entrada = new Scanner(System.in);
         System.out.print("Introduce el nombre del producto para saber su fabricante: ");
         String nombreProd = entrada.nextLine().trim();
+        System.out.println(nombreProd);
 
         FabricanteDAO dao = new FabricanteDAO();
         Fabricante f = dao.buscarFabricantePorNombreProducto(nombreProd);
@@ -110,6 +111,7 @@ public class Main {
     private static void borrarFabricante() {
         Scanner entrada = new Scanner(System.in);
         System.out.println("Introduce el ID del fabricante a borrar: ");
+        listarFabricantes();
         int id = entrada.nextInt();
         fabricanteDAO.borrar(id);
     }
@@ -164,6 +166,7 @@ public class Main {
            System.out.println(">> 2. Buscar el ID por NOMBRE de Fabricante");
            System.out.println(">> 3. Buscar el Fabricante por NOMBRE de Producto");
            System.out.println(">> 4. Buscar por NOMBRE de Fabricante y obtener productos asociados");
+            System.out.println(">> 9. Volver atrás");
             opcion = entrada.nextInt();
 
            switch (opcion) {
@@ -177,6 +180,8 @@ public class Main {
                     buscarFabricanteDeUnProducto();
                    break;
                case 4:
+                   break;
+               case 9:
                    break;
                default:
            }
