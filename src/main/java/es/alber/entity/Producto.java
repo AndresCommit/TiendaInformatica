@@ -17,10 +17,8 @@ public class Producto {
     @Column(name = "precio")
     private Double precio;
 
-    // Relación: Muchos Productos pertenecen a UN Fabricante.
-    // @JoinColumn es la columna real de la base de datos (la Foreign Key).
     @ManyToOne
-    @JoinColumn(name = "codigo_fabricante")
+    @JoinColumn(name = "cod_fabricante")
     private Fabricante fabricante;
 
     public Producto() {
@@ -31,7 +29,6 @@ public class Producto {
         this.precio = precio;
     }
 
-    // Getters y Setters
     public Integer getCodigo() {
         return codigo;
     }
