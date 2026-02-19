@@ -70,7 +70,6 @@ public class Main {
                     }
                     break;
                 case 3:
-                    // Mostramos la lista antes de pedir el ID
                     for (Producto p : productoDAO.listarTodos()) {
                         System.out.println(p.getCodigo() + ": " + p.getNombre() + " " + p.getPrecio() + " " + p.getFabricante().getNombre());
                     }
@@ -163,7 +162,7 @@ public class Main {
         System.out.println(nombreProd);
 
         FabricanteDAO dao = new FabricanteDAO();
-        Fabricante f = dao.buscarFabricantePorNombreProducto(nombreProd);
+        Fabricante f = dao.buscarPorNombreConProductos(nombreProd);
 
         if (f != null) {
             System.out.println("El producto '" + nombreProd + "' es fabricado por: " + f.getNombre());
@@ -184,17 +183,22 @@ public class Main {
     }
     private static void buscarProductoPorNombreFabricante() {
         Scanner entrada = new Scanner(System.in);
-        entrada.nextLine();
         System.out.println("Introduce el nombre del fabricante para conocer sus productos: ");
-        String nombFab = entrada.nextLine();
-        Fabricante fab = FabricanteDAO.buscarPorNombre(nombFab);
-        if(fab != null && fab.getListaProductos() != null) {
-            System.out.println("Se han encontrado " + fab.getListaProductos().size() + " Asociados al fabricante: " + fab.getNombre());
-            for(Producto p : fab.getListaProductos()) {
-                System.out.println("-> ID: " + p.getCodigo() + " Producto: " + p.getNombre());
+        String nombFab = entrada.nextLine().trim();
+
+        Fabricante fab = FabricanteDAO.buscarPorNombreConProductos(nombFab);
+
+        if(fab != null) {
+            if(fab.getListaProductos() != null && !fab.getListaProductos().isEmpty()) {
+                System.out.println("Se han encontrado " + fab.getListaProductos().size() + " asociados a este fabricante: " + fab.getNombre());
+                for(Producto p : fab.getListaProductos()) {
+                    System.out.println("-> ID: " + p.getCodigo() + " Producto: " + p.getNombre());
+                }
+            } else {
+                System.out.println("El fabricante " + fab.getNombre() + " existe, pero no tiene productos registrados.");
             }
         } else {
-            System.out.println("No se encontraron productos o el fabricante no existe.");
+            System.out.println("No se encontró ningún fabricante con ese nombre.");
         }
     }
     private static void borrarFabricante() {

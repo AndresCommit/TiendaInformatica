@@ -87,17 +87,14 @@ public class FabricanteDAO {
         }
     }
 
-    public Fabricante buscarFabricantePorNombreProducto(String nombreProducto) {
+    public static Fabricante buscarPorNombreConProductos(String nombreBusqueda) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction tx;
-            String query = "SELECT f FROM Fabricante f JOIN f.listaProductos p WHERE LOWER(p.nombre) = LOWER(:nombreProd)";
-            tx=session.beginTransaction();
-            return session.createQuery(query, Fabricante.class)
-                    .setParameter("nombreProd", nombreProducto)
+            String hql = "SELECT f FROM Fabricante f LEFT JOIN FETCH f.listaProductos WHERE LOWER(f.nombre) = LOWER(:nombre)";
+            return session.createQuery(hql, Fabricante.class)
+                    .setParameter("nombre", nombreBusqueda)
                     .uniqueResult();
-
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return null;
         }
     }
