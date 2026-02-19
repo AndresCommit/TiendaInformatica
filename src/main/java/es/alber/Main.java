@@ -51,11 +51,13 @@ public class Main {
         int opcionProd;
         ProductoDAO productoDAO = new ProductoDAO();
         do {
-            System.out.println("\n   === Menú Gestión Productos ===");
-            System.out.println("   1. Crear Producto");
-            System.out.println("   2. Listar Productos");
-            System.out.println("   9. Volver atrás");
-            System.out.print("   Elige una opción: ");
+            System.out.println("\n   === GESTIÓN DE PRODUCTOS ===");
+            System.out.println("   1. Crear");
+            System.out.println("   2. Leer / Buscar");
+            System.out.println("   3. Actualizar Precio");
+            System.out.println("   4. Borrar");
+            System.out.println("   9. Volver");
+            System.out.print("   Elige: ");
             opcionProd = entrada.nextInt();
 
             switch (opcionProd) {
@@ -64,8 +66,24 @@ public class Main {
                     break;
                 case 2:
                     for (Producto p : productoDAO.listarTodos()) {
-                        System.out.println(p);
+                        System.out.println(p.getCodigo() + ": " + p.getNombre() + " | " + p.getPrecio() + " | " + p.getFabricante().getNombre());
                     }
+                    break;
+                case 3:
+                    // Mostramos la lista antes de pedir el ID
+                    for (Producto p : productoDAO.listarTodos()) {
+                        System.out.println(p.getCodigo() + ": " + p.getNombre() + " " + p.getPrecio() + " " + p.getFabricante().getNombre());
+                    }
+                    System.out.print("Introduce el ID del producto a modificar: ");
+                    int idActualizar = entrada.nextInt();
+                    System.out.print("Introduce el nuevo precio: ");
+                    double nuevoPrecio = entrada.nextDouble();
+                    productoDAO.actualizarPrecio(idActualizar, nuevoPrecio);
+                    break;
+                case 4:
+                    System.out.print("Introduce el ID del producto a borrar: ");
+                    int idBorrar = entrada.nextInt();
+                    productoDAO.borrar(idBorrar);
                     break;
             }
         } while (opcionProd != 9);
@@ -73,25 +91,34 @@ public class Main {
 
     private static void crearProducto(Scanner entrada, ProductoDAO dao) {
         entrada.nextLine();
+        System.out.println("CREAR PRODUCTO");
         System.out.print("Nombre del producto: ");
         String nombre = entrada.nextLine();
         System.out.print("Precio: ");
         double precio = entrada.nextDouble();
-        System.out.println("Lista de Fabricantes Existentes:");
-        listarFabricantes();
         entrada.nextLine();
-        System.out.print("Introduce el ID del Fabricante: ");
-        int idFab = entrada.nextInt();
 
-        Fabricante fab = fabricanteDAO.buscarPorId(idFab);
-        if (fab != null) {
-            Producto p = new Producto(nombre, precio);
-            p.setFabricante(fab);
-            dao.guardar(p);
-        } else {
-            System.out.println("Error: El fabricante no existe.");
+        System.out.println("Fabricantes disponibles:");
+        for(Fabricante f : fabricanteDAO.listar()) {
+            System.out.println(f.getNombre());
         }
+
+        System.out.print("Nombre del fabricante (si no existe, se creará): ");
+        String nombreFab = entrada.nextLine().trim();
+
+        Fabricante fab = FabricanteDAO.buscarPorNombre(nombreFab);
+
+        if (fab == null) {
+            fab = new Fabricante(nombreFab);
+            FabricanteDAO.guardar(fab);
+        }
+
+        Producto p = new Producto(nombre, precio);
+        p.setFabricante(fab);
+        dao.guardar(p);
+        System.out.println("Operación finalizada con éxito.");
     }
+
 
     private static void crearFabricante() {
         Scanner entrada = new Scanner(System.in);
@@ -155,12 +182,39 @@ public class Main {
         System.out.println("Fabricante actualizado correctamente.");
 
     }
+    private static void buscarProductoPorNombreFabricante() {
+        Scanner entrada = new Scanner(System.in);
+        entrada.nextLine();
+        System.out.println("Introduce el nombre del fabricante para conocer sus productos: ");
+        String nombFab = entrada.nextLine();
+        Fabricante fab = FabricanteDAO.buscarPorNombre(nombFab);
+        if(fab != null && fab.getListaProductos() != null) {
+            System.out.println("Se han encontrado " + fab.getListaProductos().size() + " Asociados al fabricante: " + fab.getNombre());
+            for(Producto p : fab.getListaProductos()) {
+                System.out.println("-> ID: " + p.getCodigo() + " Producto: " + p.getNombre());
+            }
+        } else {
+            System.out.println("No se encontraron productos o el fabricante no existe.");
+        }
+    }
     private static void borrarFabricante() {
         Scanner entrada = new Scanner(System.in);
-        System.out.println("Introduce el ID del fabricante a borrar: ");
-        listarFabricantes();
+        System.out.println("BORRAR FABRICANTE");
+        System.out.print("Introduce el ID del fabricante a borrar: ");
         int id = entrada.nextInt();
-        fabricanteDAO.borrar(id);
+
+        Fabricante fab = fabricanteDAO.buscarPorId(id);
+        if(fab != null) {
+            System.out.println("VAS A BORRAR A: " + fab.getNombre());
+            System.out.println("¿Estás seguro? (s/n): ");
+            String confirmacion = entrada.next();
+            if(confirmacion.equalsIgnoreCase("s")) {
+                fabricanteDAO.borrar(id);
+                System.out.println("ÉXITO: Fabricante eliminado.");
+            }
+        } else {
+            System.out.println("Error: No existe el ID " + id);
+        }
     }
     private static void menuFabricantes(Scanner entrada) {
         int opcionFabricante;
@@ -192,13 +246,12 @@ public class Main {
                     break;
                 case 4:
                     borrarFabricante();
-                    System.out.println("   >> Eliminando fabricante...");
                     break;
                 case 9:
                     System.out.println("   >> Volviendo al menú principal...");
                     break;
                 default:
-                    System.out.println("   >> Opción de fabricante no válida.");
+                    System.out.println("   >> Opción de fabricante no válida");
                     break;
             }
         } while (opcionFabricante != 9);
@@ -227,6 +280,7 @@ public class Main {
                     buscarFabricanteDeUnProducto();
                    break;
                case 4:
+                    buscarProductoPorNombreFabricante();
                    break;
                case 9:
                    break;
